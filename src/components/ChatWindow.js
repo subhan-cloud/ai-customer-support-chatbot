@@ -17,6 +17,17 @@ function ChatWindow() {
   async function handleSendMessage(text) {
   if (!text.trim()) return;
 
+  const conversationHistory = [
+  ...messages,
+  {
+    message: text,
+    sender: "You",
+  },
+].map((item) => ({
+  role: item.sender === "You" ? "user" : "model",
+  parts: [{ text: item.message }],
+}));
+
   setMessages((previousMessages) => [
     ...previousMessages,
     {
@@ -33,8 +44,8 @@ function ChatWindow() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        message: text,
-      }),
+  history: conversationHistory,
+}),
     });
 
     if (!response.ok) {

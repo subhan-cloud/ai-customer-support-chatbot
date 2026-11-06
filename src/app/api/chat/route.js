@@ -1,9 +1,35 @@
+import { GoogleGenAI } from "@google/genai";
+import connectDB from "@/lib/mongodb";
+// Initialize Gemini
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
+
+// Your existing POST function
 export async function POST(request) {
-  const body = await request.json();
+  try {
+    await connectDB();
+    const body = await request.json();
 
-  const message = body.message;
+    const history = body.history;
 
-  return Response.json({
-    reply: `You said: ${message}`,
-  });
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash-lite",
+      contents: history,
+    });
+
+    return Response.json({
+      reply: response.text,
+    });
+
+  } catch (error) {
+    console.error("Gemini API error:", error);
+
+    return Response.json(
+      {
+        error: "Gemini is temporarily unavailable. Please try again.",
+      },
+      { status: 503 }
+    );
+  }
 }
