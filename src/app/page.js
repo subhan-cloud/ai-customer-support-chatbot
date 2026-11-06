@@ -13,9 +13,6 @@ export default function Home() {
           <WelcomeMessage />
           <ChatWindow />
 
-          <div className="mt-6">
-            <ChatInput />
-          </div>
         </div>
       </div>
     </div>
