@@ -3,6 +3,12 @@ import mongoose from "mongoose";
 
 const conversationSchema = new mongoose.Schema(
   {
+    sessionId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
     messages: [
       {
         role: {

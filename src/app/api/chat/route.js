@@ -1,5 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import connectDB from "@/lib/mongodb";
+import Conversation from "@/models/Conversation";
+
 // Initialize Gemini
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -17,6 +19,20 @@ export async function POST(request) {
       model: "gemini-3.5-flash-lite",
       contents: history,
     });
+
+    const conversation = await Conversation.create({
+  messages: history.map((item) => ({
+    role: item.role,
+    text: item.parts[0].text,
+  })),
+});
+
+conversation.messages.push({
+  role: "model",
+  text: response.text,
+});
+
+await conversation.save();
 
     return Response.json({
       reply: response.text,
